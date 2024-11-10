@@ -1,12 +1,22 @@
-
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-export const genres = ['Fantasy', 'Thriller', 'Science Fiction', 'Romance' , `Western` 
-    , `Literary Fiction` , `Horror` , `Adventure` , "Drama" , "Dystopian" , "Classic"] as const;
+export const genres = [
+  'Fantasy',
+  'Thriller',
+  'Science Fiction',
+  'Romance',
+  `Western`,
+  `Literary Fiction`,
+  `Horror`,
+  `Adventure`,
+  'Drama',
+  'Dystopian',
+  'Classic',
+] as const;
 
 export type BookDocument = HydratedDocument<Book>;
 
-@Schema({timestamps:true})
+@Schema({ timestamps: true })
 export class Book {
   @Prop({ type: String, required: true })
   title: string;
@@ -18,13 +28,13 @@ export class Book {
   pages: number;
 
   @Prop({ type: [String], required: true, enum: genres })
-  genres:string[]
+  genres: string[];
 
   @Prop({ type: Date, required: true })
-  publicationDate:Date
+  publicationDate: Date;
 
   @Prop({ type: String, unique: true, required: true })
-  isbn:string
+  isbn: string;
 }
 
 export const BookSchema = SchemaFactory.createForClass(Book);

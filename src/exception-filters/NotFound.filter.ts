@@ -1,5 +1,9 @@
-
-import { NotFoundException, Catch, ArgumentsHost , ExceptionFilter} from '@nestjs/common';
+import {
+  NotFoundException,
+  Catch,
+  ArgumentsHost,
+  ExceptionFilter,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 
 @Catch(NotFoundException)
@@ -10,14 +14,12 @@ export class NotFoundFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
 
-    response
-      .status(status)
-      .json({
-        statusCode: status,
-        timestamp: new Date().toISOString(),
-        method:request.method ,
-        path: request.url,
-        cause: `The book you requested is not currently present within the system.` ,
-      });
+    response.status(status).json({
+      statusCode: status,
+      timestamp: new Date().toISOString(),
+      method: request.method,
+      path: request.url,
+      cause: `The book you requested is not currently present within the system.`,
+    });
   }
 }
