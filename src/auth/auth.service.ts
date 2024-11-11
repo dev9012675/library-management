@@ -106,5 +106,8 @@ export class AuthService {
 
   async signout(id: string) {
     await this.usersService.updateHashedRefreshToken(id, null);
+    return {
+      message:`You have signed out`
+    }
   }
 }

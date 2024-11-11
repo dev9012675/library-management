@@ -4,7 +4,7 @@ import {
   Get,
   Post,
   Req,
-  Request,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { User } from 'src/users/users.schema';
@@ -18,6 +18,7 @@ import { JwtAuthGuard } from './guards/jwt/jwt-guard';
 import { ValidateTokenDTO } from './dtos/validate-token.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RefreshAuthGuard } from './guards/refresh/refresh.guard';
+import { Request, Response } from 'express';
 
 @Controller('api/auth')
 export class AuthController {
@@ -46,22 +47,45 @@ export class AuthController {
     }),
   )
   @Post('login')
-  async login(@Body() loginDto: LoginDTO) {
-    return await this.authService.login(loginDto);
+  async login(@Body() loginDto: LoginDTO , @Res({ passthrough: true }) response:Response) {
+    const userData = await this.authService.login(loginDto);
+    const Options = {
+      httpOnly: true,
+      secure: true,
+    };
+    response.cookie('accessToken', userData.accessToken, Options);
+    response.cookie('refreshToken', userData.refreshToken, Options);
+    return userData
+
   }
 
   @UseGuards(RefreshAuthGuard)
   @Post(`refresh`)
-  async refreshToken(@Req() req) {
-    return await this.authService.refreshToken(req.user.userId);
+  async refreshToken(@Req() req , 
+  @Res({ passthrough: true }) response: Response) {
+    const tokens = await this.authService.refreshToken(req.user.userId);
+    const Options = {
+      httpOnly: true,
+      secure: true,
+    };
+    response.cookie('accessToken', tokens.accessToken, Options);
+    response.cookie('refreshToken', tokens.refreshToken, Options);
+    return tokens
   }
 
   @Post(`signout`)
   @UseGuards(JwtAuthGuard)
-  async signout(@Req() req) {
-    await this.authService.signout(req.user.userId);
-    return {
-      message:`You have signed out`
+  async signout(@Req() req ,  @Res({ passthrough: true }) response: Response){
+    const signOut = await this.authService.signout(req.user.userId);
+    const Options = {
+      httpOnly: true,
+      secure: true,
+    };
+    if (signOut) {
+      response.clearCookie('accessToken' , Options);
+      response.clearCookie('refreshToken' , Options);
     }
+    
+    return signOut
   }
 }

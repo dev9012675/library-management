@@ -20,15 +20,31 @@ export class RefreshJWTStrategy extends PassportStrategy(
     private authService: AuthService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        RefreshJWTStrategy.extractJWT,
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ]),
       ignoreExpiration: false,
       secretOrKey: refreshJwtConfiguration.secret,
       passReqToCallback: true,
     });
   }
 
+  private static extractJWT(req: Request ): string | null {
+    if (
+      req.cookies &&
+      'refreshToken' in req.cookies &&
+      req.cookies.refreshToken.length > 0
+    ) {
+      return req.cookies.refreshToken;
+    }
+    return null;
+  }
+
+
+
   async validate(req: Request, payload: PayloadType) {
-    const refreshToken = req.get(`authorization`).replace(`Bearer`, ``).trim();
+    const refreshToken = req.cookies[`refreshToken`].trim();
     const id = payload.userId;
     return await this.authService.validateRefreshToken(id, refreshToken);
   }

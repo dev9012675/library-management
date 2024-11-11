@@ -24,9 +24,80 @@ Located in src/exception-filters/NotFound.filter.ts.This filter only catches exc
 
 I  have also customized an HTTP response using NestJS's HttpException class in the implementation of the ValidateId pipe.
 
+I have also created the following guards for Authentication.
+
+#### JwtAuthGuard:-
+
+This guard verifies that a user is logged in/authenticated before accessing a route.
+
+#### RolesGuard:-
+
+This guard verifies that a user is logged in/authenticated and has the appropriate role before accessing a route.
+
+
+#### RefreshAuthGuard:-
+
+This guard is used in the refresh route of the auth API to determine if a valid Refresh Token is present.
+
+
 
 ## API Reference
 
+### User Management
+
+
+#### Create a User:-
+
+```http
+  POST /api/auth/signup
+```
+Saves the data of the user to the database.
+
+#### Request Body
+
+```json
+{
+"firstName": "test",
+"lastName": "doe",
+"email": "test@gmail.com",
+"password": "abcdef"
+}
+```
+
+#### User Login
+
+```http
+  POST /api/auth/login
+```
+Firstly, it checks user credentials. If valid, it generates Access and Refresh Tokens and saves them in cookies.
+If not, then an appropriate message is sent to the client.
+
+#### Request Body
+
+```json
+{
+"email": "test@gmail.com",
+"password": "abcdef"
+}
+```
+#### Refresh:-
+
+```http
+  POST /api/auth/refresh
+```
+
+Generates new access and refresh tokens.
+
+
+#### Sign out:-
+
+```http
+  POST /api/auth/signout
+```
+
+Deletes the stored access and refresh tokens.
+
+### Books Management
 
 #### Create a book
 
@@ -79,6 +150,31 @@ The pagination object consists of two optional properties:page and limit. Limit 
 | Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
 | `id`      | `string` | **Required**. Id of book to delete |
+
+
+#### Borrow a Book:
+
+```http
+  POST /api/books/${id}/borrow
+```
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**. Id of book to borrow |
+
+A user in the system can borrow a book if it is not already borrowed by another person.
+
+#### Return a Book:
+
+```http
+  POST /api/books/${id}/return
+```
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**. Id of book to return|
+
+A user in the system can return their borrowed book.
+
+
 
 
 
