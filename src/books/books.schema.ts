@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import { User , UserSchema } from 'src/users/users.schema';
+import mongoose from 'mongoose';
 export const genres = [
   'Fantasy',
   'Thriller',
@@ -35,6 +37,9 @@ export class Book {
 
   @Prop({ type: String, unique: true, required: true })
   isbn: string;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' , default:null})
+  borrower: User;
 }
 
 export const BookSchema = SchemaFactory.createForClass(Book);

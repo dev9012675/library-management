@@ -25,10 +25,7 @@ export class CreateUserDTO {
   @IsNotEmpty()
   password: string;
 
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  books: string[];
+
 
   @IsIn(roles)
   role: UserRole = `user`;

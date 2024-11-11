@@ -9,8 +9,7 @@ import { Book } from 'src/books/books.schema';
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User.name) private userModel: Model<User>,
-    @InjectModel(Book.name) private playlistModel: Model<Book>,
+    @InjectModel(User.name) private userModel: Model<User>
   ) {}
   async create(userDTO: CreateUserDTO): Promise<User> {
     const salt = await bcrypt.genSalt();
@@ -18,14 +17,7 @@ export class UsersService {
     user.firstName = userDTO.firstName;
     user.lastName = userDTO.lastName;
     user.email = userDTO.email;
-    if (typeof userDTO.books !== `undefined`) {
-      const playlists = await this.playlistModel.find({
-        _id: {
-          $in: [...userDTO.books],
-        },
-      });
-      user.books = playlists;
-    }
+   
 
     user.role = userDTO.role;
 

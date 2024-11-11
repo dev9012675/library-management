@@ -36,8 +36,7 @@ export class User {
   @Prop({ required: true, unique: true })
   password: string;
 
-  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Book' }])
-  books: Book[];
+ 
 
   @Prop({ type: String, required: true, enum: roles, default: 'user' })
   role: string;

@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseFilters,
   UseGuards,
   UsePipes,
@@ -21,6 +22,8 @@ import { ParsePaginationPipe } from 'src/pipes/parse-pagination.pipe';
 import { ValidateIdPipe } from 'src/pipes/validate-id.pipe';
 import { NotFoundFilter } from 'src/exception-filters/NotFound.filter';
 import { JwtAuthGuard } from 'src/auth/guards/jwt/jwt-guard';
+import { Roles } from 'src/auth/roles/roles.decorator';
+import { RolesGuard } from 'src/auth/roles/roles.guard';
 @Controller('api/books')
 export class BooksController {
   constructor(private booksService: BooksService) {}
@@ -40,7 +43,8 @@ export class BooksController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard , RolesGuard)
+  @Roles(`admin`)
   @UsePipes(
     new ValidationPipe({
       transform: true,
@@ -61,7 +65,8 @@ export class BooksController {
 
   @UseFilters(NotFoundFilter)
   @Put(`:id`)
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard , RolesGuard)
+  @Roles(`admin`)
   @UsePipes(
     new ValidationPipe({
       transform: true,
@@ -78,8 +83,25 @@ export class BooksController {
 
   @UseFilters(NotFoundFilter)
   @Delete(`:id`)
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard , RolesGuard)
+  @Roles(`admin`)
   async remove(@Param(`id`, ValidateIdPipe) id: string) {
     return await this.booksService.remove(id);
   }
+
+  @UseFilters(NotFoundFilter)
+  @Post(`:id/borrow`)
+  @UseGuards(JwtAuthGuard)
+  async borrow(@Param(`id`, ValidateIdPipe) id: string , @Req() request){
+      return await this.booksService.borrow(id , request.user.userId)
+
+  }
+
+  @UseFilters(NotFoundFilter)
+  @Post(`:id/return`)
+  @UseGuards(JwtAuthGuard)
+  async return(@Param(`id`, ValidateIdPipe) id: string , @Req() request){
+    return await this.booksService.return(id , request.user.userId)
+
+}
 }

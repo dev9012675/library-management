@@ -4,17 +4,18 @@ import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
 export class ParsePaginationPipe
   implements
     PipeTransform<
-      { page?: string; limit?: string },
-      { page?: number; limit?: number }
+      { page?: string; limit?: string , filter?:string },
+      { page?: number; limit?: number , filter?:string }
     >
 {
   transform(
-    pagination: { page?: string; limit?: string },
+    pagination: { page?: string; limit?: string , filter?:string },
     metadata: ArgumentMetadata,
   ): { page?: number; limit?: number } {
     if (
       typeof pagination.page === `undefined` &&
-      typeof pagination.limit === `undefined`
+      typeof pagination.limit === `undefined` &&
+      typeof pagination.filter === `undefined` 
     ) {
       return {};
     } else {
@@ -25,6 +26,10 @@ export class ParsePaginationPipe
 
       if (typeof pagination.limit !== `undefined`) {
         object[`limit`] = parseInt(pagination[`limit`]);
+      }
+
+      if(typeof pagination.filter !== `undefined`) {
+        object[`filter`] = pagination[`filter`]
       }
       return object;
     }
