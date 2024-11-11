@@ -8,6 +8,7 @@ import {
   Put,
   Query,
   UseFilters,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -19,6 +20,7 @@ import { PaginationDTO } from 'src/pagination/pagination-dto';
 import { ParsePaginationPipe } from 'src/pipes/parse-pagination.pipe';
 import { ValidateIdPipe } from 'src/pipes/validate-id.pipe';
 import { NotFoundFilter } from 'src/exception-filters/NotFound.filter';
+import { JwtAuthGuard } from 'src/auth/guards/jwt/jwt-guard';
 @Controller('api/books')
 export class BooksController {
   constructor(private booksService: BooksService) {}
@@ -32,11 +34,13 @@ export class BooksController {
     }),
   )
   @Get()
+  @UseGuards(JwtAuthGuard)
   async findMultiple(@Query() pagination: PaginationDTO): Promise<Book[]> {
     return await this.booksService.findMultiple(pagination);
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @UsePipes(
     new ValidationPipe({
       transform: true,
@@ -50,12 +54,14 @@ export class BooksController {
 
   @UseFilters(NotFoundFilter)
   @Get(`:id`)
+  @UseGuards(JwtAuthGuard)
   async findOne(@Param(`id`, ValidateIdPipe) id: string) {
     return await this.booksService.findOne(id);
   }
 
   @UseFilters(NotFoundFilter)
   @Put(`:id`)
+  @UseGuards(JwtAuthGuard)
   @UsePipes(
     new ValidationPipe({
       transform: true,
@@ -72,6 +78,7 @@ export class BooksController {
 
   @UseFilters(NotFoundFilter)
   @Delete(`:id`)
+  @UseGuards(JwtAuthGuard)
   async remove(@Param(`id`, ValidateIdPipe) id: string) {
     return await this.booksService.remove(id);
   }

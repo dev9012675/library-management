@@ -41,6 +41,9 @@ export class User {
 
   @Prop({ type: String, required: true, enum: roles, default: 'user' })
   role: string;
+
+  @Prop()
+  hashedRefreshToken: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

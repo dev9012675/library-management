@@ -47,4 +47,10 @@ export class UsersService {
   async findById(id: string) {
     return await this.userModel.findById(id);
   }
+
+  async updateHashedRefreshToken(id: string, hashedRefreshToken: string) {
+    return await this.userModel.findByIdAndUpdate(id, {
+      hashedRefreshToken: hashedRefreshToken,
+    });
+  }
 }

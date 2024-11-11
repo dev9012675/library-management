@@ -10,17 +10,17 @@ import { ConfigModule } from '@nestjs/config';
 import jwtConfig from './config/jwt.config';
 import refreshJwtConfig from './config/refresh-jwt.config';
 import { RefreshJWTStrategy } from './strategies/refresh-strategy';
-dotenv.config()
+dotenv.config();
 
 @Module({
   imports: [
     UsersModule,
     PassportModule,
     JwtModule.registerAsync(jwtConfig.asProvider()),
-    ConfigModule.forFeature(jwtConfig) ,
-    ConfigModule.forFeature(refreshJwtConfig)
+    ConfigModule.forFeature(jwtConfig),
+    ConfigModule.forFeature(refreshJwtConfig),
   ],
-  providers: [AuthService, JWTStrategy , RefreshJWTStrategy],
+  providers: [AuthService, JWTStrategy, RefreshJWTStrategy],
   controllers: [AuthController],
   exports: [AuthService],
 })

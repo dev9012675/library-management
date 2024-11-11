@@ -13,7 +13,7 @@ import { CreateUserDTO } from 'src/users/dtos/create-user-dto';
 import { LoginDTO } from './dtos/login.dto';
 import { AuthService } from './auth.service';
 
-import { ValidationPipe , UsePipes } from '@nestjs/common';
+import { ValidationPipe, UsePipes } from '@nestjs/common';
 import { JwtAuthGuard } from './guards/jwt/jwt-guard';
 import { ValidateTokenDTO } from './dtos/validate-token.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -26,8 +26,7 @@ export class AuthController {
     private authService: AuthService,
   ) {}
 
-
-@UsePipes(
+  @UsePipes(
     new ValidationPipe({
       transform: true,
       whitelist: true,
@@ -38,7 +37,6 @@ export class AuthController {
   signup(@Body() userDTO: CreateUserDTO): Promise<User> {
     return this.userService.create(userDTO);
   }
-
 
   @UsePipes(
     new ValidationPipe({
@@ -55,8 +53,15 @@ export class AuthController {
   @UseGuards(RefreshAuthGuard)
   @Post(`refresh`)
   async refreshToken(@Req() req) {
-    console.log(req)
-    return await this.authService.refreshToken(req.user.userId)
+    return await this.authService.refreshToken(req.user.userId);
+  }
 
+  @Post(`signout`)
+  @UseGuards(JwtAuthGuard)
+  async signout(@Req() req) {
+    await this.authService.signout(req.user.userId);
+    return {
+      message:`You have signed out`
+    }
   }
 }
