@@ -86,12 +86,13 @@ export class BooksService {
   }
 
   async return(bookId:string , userId:string) {
+    
     const book = await this.bookModel.findById(bookId)
     const user = await this.userModel.findById(userId)
     if(!book || !user) {
       throw new NotFoundException()
     }
-    else if(book.borrower === null) {
+    else if(book.borrower === null || book.borrower.toString() !== userId ) {
       return {
         message:`You have not borrowed this book`
       }
